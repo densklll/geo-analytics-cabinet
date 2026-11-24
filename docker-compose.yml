@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: geo
+      POSTGRES_USER: geo
+      POSTGRES_PASSWORD: geo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geo -d geo"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgres://geo:geo@db:5432/geo
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      PORT: 3001
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-3001}:3001"
+
+  web:
+    build:
+      context: ./web
+      args:
+        API_INTERNAL_URL: http://api:3001
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+  # Автотесты в отдельной базе geo_test: docker compose --profile test run --rm api-test
+  api-test:
+    profiles: ["test"]
+    build:
+      context: ./api
+      target: test
+    environment:
+      TEST_DATABASE_URL: postgres://geo:geo@db:5432/geo_test
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
