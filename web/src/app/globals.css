@@ -88,16 +88,82 @@ button, input, select { font: inherit; }
 .filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
 .field { display: flex; flex-direction: column; gap: 4px; }
 .field > span { font-size: 12px; color: var(--muted); font-weight: 500; }
-.field input, .field select {
+.field input {
   height: 36px;
-  padding: 0 10px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--text);
+  min-width: 150px;
+  line-height: 1.2;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:hover { border-color: #cbd5e1; }
+.field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.select-wrap { position: relative; display: inline-flex; }
+.select-trigger {
+  height: 36px;
+  min-width: 176px;
+  padding: 0 10px 0 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
   color: var(--text);
-  min-width: 160px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.field input:focus, .field select:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+.select-trigger:hover:not(:disabled) { border-color: #cbd5e1; }
+.select-trigger:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.select-trigger:disabled { opacity: 0.55; cursor: default; }
+.select-label { overflow: hidden; text-overflow: ellipsis; }
+.select-chevron { flex-shrink: 0; opacity: 0.65; transition: transform 0.15s; }
+.select-chevron.is-open { transform: rotate(180deg); }
+.select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: 300px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.05);
+  z-index: 40;
+}
+.select-menu-right { left: auto; right: 0; }
+.select-option {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 7px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.select-option:hover { background: #f1f5f9; }
+.select-option.is-selected { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.select-check { margin-left: auto; flex-shrink: 0; }
+.select-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-new { background: var(--red); }
+.dot-in_progress { background: #d97706; }
+.dot-resolved { background: var(--green); }
 
 .segmented { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: #fff; }
 .segmented button { border: 0; background: transparent; padding: 0 12px; height: 34px; cursor: pointer; color: var(--muted); transition: background 0.15s, color 0.15s; }
@@ -148,10 +214,24 @@ button, input, select { font: inherit; }
 .reviews { display: flex; flex-direction: column; gap: 10px; }
 .review p { margin: 10px 0 0; line-height: 1.5; }
 .review-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.review-head .status { margin-left: auto; }
+.review-head .review-status { margin-left: auto; }
 .stars { color: #f59e0b; letter-spacing: 1px; }
 .stars-empty { color: #e2e8f0; }
-.status { height: 30px; border-radius: 999px; border: 1px solid var(--border); padding: 0 10px; font-size: 12px; font-weight: 500; cursor: pointer; }
+.status {
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 0 10px 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.status:hover:not(:disabled) { filter: brightness(0.96); }
+.status:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
 .status-new { background: #fef2f2; color: var(--red); border-color: #fecaca; }
 .status-in_progress { background: #fffbeb; color: #b45309; border-color: #fde68a; }
 .status-resolved { background: #ecfdf5; color: var(--green); border-color: #a7f3d0; }

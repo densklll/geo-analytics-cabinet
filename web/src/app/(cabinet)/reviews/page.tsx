@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Filters } from '@/components/Filters';
+import { Select } from '@/components/Select';
 import { Stars } from '@/components/Stars';
 import { Empty, ErrorBox, Loader } from '@/components/States';
 import { api, buildQuery } from '@/lib/api';
@@ -132,18 +133,20 @@ export default function ReviewsPage() {
                 <span className="muted small">
                   {SOURCE_LABELS[r.source]} · {r.branchName} · {formatDate(r.publishedAt)}
                 </span>
-                <select
-                  className={`status status-${r.status}`}
-                  value={r.status}
-                  disabled={saving === r.id}
-                  onChange={(e) => changeStatus(r, e.target.value as ReviewStatus)}
-                >
-                  {(Object.keys(STATUS_LABELS) as ReviewStatus[]).map((s) => (
-                    <option key={s} value={s}>
-                      {STATUS_LABELS[s]}
-                    </option>
-                  ))}
-                </select>
+                <div className="review-status">
+                  <Select
+                    className={`status status-${r.status}`}
+                    align="right"
+                    value={r.status}
+                    disabled={saving === r.id}
+                    options={(Object.keys(STATUS_LABELS) as ReviewStatus[]).map((s) => ({
+                      value: s,
+                      label: STATUS_LABELS[s],
+                      dotClass: `dot-${s}`,
+                    }))}
+                    onChange={(next) => changeStatus(r, next as ReviewStatus)}
+                  />
+                </div>
               </div>
               <p>{r.text}</p>
             </article>

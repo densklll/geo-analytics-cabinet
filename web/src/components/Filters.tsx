@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@/components/Select';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useFilters } from '@/lib/filters';
@@ -27,41 +28,42 @@ export function Filters({ showBranch = true }: { showBranch?: boolean }) {
   const today = toIso(new Date());
   const activePreset = PRESETS.find((p) => filters.to === today && filters.from === isoDaysAgo(p.days - 1));
 
+  const companyOptions = [
+    { value: '', label: 'Все компании' },
+    ...(companies.data?.map((c) => ({ value: String(c.id), label: c.name })) ?? []),
+  ];
+
+  const branchOptions = [
+    { value: '', label: 'Все филиалы' },
+    ...(branches.data?.items.map((b) => ({
+      value: String(b.id),
+      label: isAdmin && !filters.companyId ? `${b.companyName} · ${b.name}` : b.name,
+    })) ?? []),
+  ];
+
   return (
     <div className="filters">
       {isAdmin && (
-        <label className="field">
+        <div className="field">
           <span>Компания</span>
-          <select
-            value={filters.companyId ?? ''}
-            onChange={(e) => update({ companyId: e.target.value ? Number(e.target.value) : undefined, branchId: undefined })}
-          >
-            <option value="">Все компании</option>
-            {companies.data?.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            value={filters.companyId ? String(filters.companyId) : ''}
+            options={companyOptions}
+            onChange={(v) => update({ companyId: v ? Number(v) : undefined, branchId: undefined })}
+          />
+        </div>
       )}
 
       {showBranch && (
-        <label className="field">
+        <div className="field">
           <span>Филиал</span>
-          <select
-            value={filters.branchId ?? ''}
+          <Select
+            value={filters.branchId ? String(filters.branchId) : ''}
+            options={branchOptions}
             disabled={branches.loading && !branches.data}
-            onChange={(e) => update({ branchId: e.target.value ? Number(e.target.value) : undefined })}
-          >
-            <option value="">Все филиалы</option>
-            {branches.data?.items.map((b) => (
-              <option key={b.id} value={b.id}>
-                {isAdmin && !filters.companyId ? `${b.companyName} · ${b.name}` : b.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            onChange={(v) => update({ branchId: v ? Number(v) : undefined })}
+          />
+        </div>
       )}
 
       <div className="field">
@@ -70,6 +72,7 @@ export function Filters({ showBranch = true }: { showBranch?: boolean }) {
           {PRESETS.map((p) => (
             <button
               key={p.days}
+              type="button"
               className={activePreset === p ? 'active' : ''}
               onClick={() => update({ from: isoDaysAgo(p.days - 1), to: today })}
             >
