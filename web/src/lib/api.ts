@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'geo.token';
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export class ApiError extends Error {
   constructor(
@@ -36,7 +37,7 @@ export async function api<T>(path: string, options: { method?: string; body?: un
   const token = tokenStorage.get();
   let response: Response;
   try {
-    response = await fetch(`/api${path}${buildQuery(options.query)}`, {
+    response = await fetch(`${BASE_PATH}/api${path}${buildQuery(options.query)}`, {
       method: options.method ?? 'GET',
       headers: {
         ...(options.body ? { 'Content-Type': 'application/json' } : {}),

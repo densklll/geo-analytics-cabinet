@@ -20,7 +20,7 @@ export function Filters({ showBranch = true }: { showBranch?: boolean }) {
 
   const companies = useApi(isAdmin ? 'companies' : null, () => api<Company[]>('/companies'));
   // список филиалов для селекта берем с бэка, поэтому клиент физически не увидит чужие
-  const branches = useApi(`branches-options:${filters.companyId ?? ''}`, () =>
+  const branches = useApi(showBranch ? `branches-options:${filters.companyId ?? ''}` : null, () =>
     api<BranchesResponse>('/branches', { query: { companyId: filters.companyId } }),
   );
 

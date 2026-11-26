@@ -66,7 +66,7 @@ export default function LoginPage() {
         </button>
 
         <div className="demo-users">
-          <div className="muted">Демо-доступы:</div>
+          <div className="muted">Демо-доступы (нажмите, чтобы подставить):</div>
           {DEMO_USERS.map((u) => (
             <button
               key={u.email}

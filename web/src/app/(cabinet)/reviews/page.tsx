@@ -56,8 +56,20 @@ export default function ReviewsPage() {
       const updated = await api<Review>(`/reviews/${review.id}/status`, { method: 'PATCH', body: { status: next } });
       if (data) {
         // если отзыв перестал подходить под фильтр статуса, проще перезапросить список
-        if (status && status !== next) reload();
-        else setData({ ...data, items: data.items.map((r) => (r.id === updated.id ? updated : r)) });
+        if (status && status !== next) {
+          reload();
+        } else {
+          const nextByStatus = { ...data.byStatus };
+          if (review.status !== next) {
+            nextByStatus[review.status] = Math.max(0, nextByStatus[review.status] - 1);
+            nextByStatus[next] = nextByStatus[next] + 1;
+          }
+          setData({
+            ...data,
+            byStatus: nextByStatus,
+            items: data.items.map((r) => (r.id === updated.id ? updated : r)),
+          });
+        }
       }
     } catch (err) {
       setSaveError((err as Error).message);
